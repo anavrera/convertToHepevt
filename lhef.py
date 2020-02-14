@@ -1,5 +1,6 @@
 from __future__ import print_function # comment this line when using python3
 import xml.etree.ElementTree as ET
+from collections import OrderedDict
 
 class LHEEvent:
 
@@ -29,7 +30,7 @@ class LHEParticle:
         self.map={}
 
     def read(self,line):
-        self.map =  dict(zip(self.fieldnames,map(float,line.split())))
+        self.map =  OrderedDict(zip(self.fieldnames,map(float,line.split())))
         if self.map['pdg'] == 5:
             self.map['pdg'] = 2112
         elif self.map['pdg'] == 6:

@@ -1,4 +1,5 @@
 from __future__ import print_function # comment this line when using python3
+from collections import OrderedDict
 
 class BdNMCEvent:
 
@@ -22,7 +23,7 @@ class BdNMCParticle:
 
     def read(self,line):
         data = line.split()
-        self.map =  dict(zip(self.fieldnames,map(float,data[1:])))
+        self.map =  OrderedDict(zip(self.fieldnames,map(float,data[1:])))
         self.map['name'] = data[0]
 
     def print_info(self):
