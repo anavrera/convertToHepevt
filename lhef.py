@@ -1,17 +1,8 @@
-from __future__ import print_function # comment this line when using python3
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
+import BaseClasses
 
-class LHEEvent:
-
-    def __init__(self, eventinfo, particles, weights=None, attributes=None):
-        self.eventinfo = eventinfo
-        self.particles = particles
-        self.weights = weights
-        self.attributes = attributes
-
-
-class LHEParticle:
+class LHEParticle(BaseClasses.BasicInfo):
     
     def __init__(self):
         self.fieldnames = ["pdg",
@@ -36,39 +27,14 @@ class LHEParticle:
         elif self.map['pdg'] == 6:
             self.map['pdg'] = 2212
 
-    def print_info(self):
-        print('############## PARTICLE  ####################')
-        for i in range(len(self.map)):
-            print(list(self.map.keys())[i]," : ",list(self.map.values())[i])
-
-class LHEEventInfo:
+class LHEEventInfo(BaseClasses.BasicInfo):
     
     def __init__(self):
         self.fieldnames = ["nparticles", "pid", "weight", "scale", "aqed", "aqcd"]
         self.map={}
 
-    def read(self,line):
-        self.map =  dict(zip(self.fieldnames,map(float,line.split())))
 
-    def print_info(self):
-        print('############## EVENT INFO ####################')
-        for i in range(len(self.map)):
-            print(list(self.map.keys())[i]," : ",list(self.map.values())[i])
-
-
-class LHEFile:
-
-    def __init__(self,filename):
-        self.name = filename
-        self.events = []
-
-        
-    def dump_file_info(self):
-        for ev in self.events:
-            ev.eventinfo.print_info()
-            print("Number of particles in event",len(ev.particles))
-            for p in ev.particles:
-                p.print_info()
+class LHEFile(BaseClasses.EvtFile):
                 
     def read_events(self):
         tree = ET.parse(self.name)
@@ -88,6 +54,5 @@ class LHEFile:
                     particle.read(p)
                     particle_objs += [particle]
                 nevts+=1
-                self.events += [LHEEvent(eventinfo,particle_objs)]
+                self.events += [BaseClasses.Event(eventinfo,particle_objs)]
 
-        print("Number of events: ", nevts)

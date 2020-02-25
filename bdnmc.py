@@ -1,13 +1,7 @@
-from __future__ import print_function # comment this line when using python3
 from collections import OrderedDict
+import BaseClasses
 
-class BdNMCEvent:
-
-    def __init__(self, eventinfo, particles):
-        self.eventinfo = eventinfo
-        self.particles = particles
-
-class BdNMCParticle:
+class BdNMCParticle(BaseClasses.BasicInfo):
 
     def __init__(self):
         self.map = {}
@@ -26,12 +20,7 @@ class BdNMCParticle:
         self.map =  OrderedDict(zip(self.fieldnames,map(float,data[1:])))
         self.map['name'] = data[0]
 
-    def print_info(self):
-        print('############## PARTICLE  ####################')
-        for i in range(len(self.map)):
-            print(list(self.map.keys())[i]," : ",list(self.map.values())[i])
-        
-class BdNMCEventInfo:
+class BdNMCEventInfo(BaseClasses.BasicInfo):
 
     def __init__(self):
         self.fieldnames = ["evt_id"]
@@ -41,12 +30,8 @@ class BdNMCEventInfo:
         evt_id = list(filter(None,line.split()))[1]
         self.map["evt_id"] = int(evt_id) - 1
 
-    def print_info(self):
-        print('############## EVENT INFO ####################')
-        for i in range(len(self.map)):
-            print(list(self.map.keys())[i]," : ",list(self.map.values())[i])
 
-class BdNMCFile:
+class BdNMCFile(BaseClasses.EvtFile):
     
     def __init__(self,filename, DM_mass, V_mass):
         self.name = filename
@@ -68,13 +53,6 @@ class BdNMCFile:
         self.info['Recoil_DM'] = [81, DM_mass, 1]
         self.info['DM'] = [81, DM_mass, 2]
 
-        
-    def dump_file_info(self):
-        for ev in self.events:
-            ev.eventinfo.print_info()
-            for p in ev.particles:
-                p.print_info()
-        print("Number of events",len(self.events))
 
     def count_events(self):
         infile = open(self.name, 'r')
@@ -99,7 +77,7 @@ class BdNMCFile:
 
             elif line.split()[0] =='endevent':
                 eventinfo.map['nparticles'] = len(particles)
-                self.events += [BdNMCEvent(eventinfo,particles)]
+                self.events += [BaseClasses.Event(eventinfo,particles)]
 
             else: 
                 new_p = BdNMCParticle()
