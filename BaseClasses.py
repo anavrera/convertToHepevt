@@ -9,7 +9,7 @@ class BasicInfo:
     
     def __init__(self):
         self.fieldnames = [] #names of all the columns
-        self.map={} #dictionary linking the column name to the value
+        self.map = {} #dictionary linking the column name to the value
 
 
     def read(self,line):
@@ -20,7 +20,7 @@ class BasicInfo:
 
     def print_info(self,title):
         """
-        Prints the contents of sel.map.
+        Prints the contents of self.map.
         """
         print('##############',title,'####################')
         for i in range(len(self.map)):

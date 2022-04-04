@@ -18,7 +18,7 @@ class BdNMCParticle(BaseClasses.BasicInfo):
     def read(self,line):
         data = line.split()
         self.map =  OrderedDict(zip(self.fieldnames,map(float,data[1:])))
-        self.map['name'] = data[0]
+        self.map['name'] = data[0].lower()
 
 class BdNMCEventInfo(BaseClasses.BasicInfo):
 
@@ -42,16 +42,21 @@ class BdNMCFile(BaseClasses.EvtFile):
 
 
     def init_info(self, DM_mass=0, V_mass=0):
+        """
+        General information about particles available in the file
+        Format is: [pdg_code, mass, status (1 for tracked particles)]
+        """
+
         self.info['eta'] = [221, 0.548, 0]
         self.info['pion'] = [111, 0.134, 0]
-        self.info['V'] = [9999, V_mass, 2]
+        self.info['v'] = [9999, V_mass, 2]
         self.info['rho'] = [113, 0.7755, 0]
         self.info['omega'] = [223, 0.7826, 0]
         self.info['proton'] = [2212, 0.9383, 0]
         self.info['neutron'] = [2112, 0.9396, 0]
         self.info['electron'] = [11, 0.000511, 0]
-        self.info['Recoil_DM'] = [81, DM_mass, 1]
-        self.info['DM'] = [81, DM_mass, 2]
+        self.info['recoil_dm'] = [81, DM_mass, 1]
+        self.info['dm'] = [81, DM_mass, 2]
 
 
     def count_events(self):

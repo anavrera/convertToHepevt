@@ -23,8 +23,9 @@ class SbndCRTParticle(BaseClasses.BasicInfo):
         """
         Splits the content of a line and stores it in self.map
         """
-      
+
         self.map =  dict(zip(self.fieldnames,map(float,line)))
+
         self.map['name']   = name
         self.map['vtx_z']  = vtx
         self.map['weight'] = w    
@@ -104,8 +105,16 @@ class SbndCRTFile(BaseClasses.EvtFile):
             positron.map['m'] = self.info[positron.map['name']][1]
             #positron.print_info("positron")
 
+            
+            dark_neutrino = SbndCRTParticle()
+            dark_neutrino.read([splitline[8],"0","0","0"],"dark_neutrino",splitline[9],splitline[10])
+            dark_neutrino.map['pdg'] = self.info[dark_neutrino.map['name']][0]
+            dark_neutrino.map['status'] = self.info[dark_neutrino.map['name']][2]
+            dark_neutrino.map['m'] = self.info[dark_neutrino.map['name']][1]
+
             particles +=  [electron]
             particles +=  [positron]
+            particles +=  [dark_neutrino]
                 
             self.events += [BaseClasses.Event(eventinfo,particles)]
             nevts+=1

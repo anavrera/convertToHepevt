@@ -1,4 +1,3 @@
-from __future__ import print_function # comment this line when using python3
 from collections import OrderedDict
 import BaseClasses
 
@@ -8,20 +7,20 @@ Can be used as a model to write a full format definition file or be completed to
 """
 
 
-class UserParticle(BasicInfo):
+class UserParticle(BaseClasses.BasicInfo):
     
     def __init__(self):
         self.fieldnames = [] #define the names of the fields of the inforamtion stored on one line 
         self.map = {}
 
 
-class UserEventInfo(BasicInfo):
+class UserEventInfo(BaseClasses.BasicInfo):
     
     def __init__(self):
         self.fieldnames= [] #define the names of the fields of the inforamtion stored on one line                                                                                                                                                                              
         self.map = {}
     
-class UserFile(EvtFile):
+class UserFile(BaseClasses.EvtFile):
     
 
     def read_events(self):
@@ -42,7 +41,7 @@ class UserFile(EvtFile):
 
             elif line.split()[0] =='end_of_event_tag': #ends the event when reading the right tag
                 eventinfo.map['nparticles'] = len(particles)
-                self.events += [UserEvent(eventinfo,particles)]
+                #self.events += [UserEvent(eventinfo,particles)]
 
             else:#if not start or end of event, read a particle line
                 new_p = UserParticle()

@@ -6,11 +6,12 @@ import random
 
 import lhef
 import bdnmc
-#import user
+import sbnd_crt
+import user
 
 
 
-def generate_position(particle, dist_file=None):
+def generate_position(particle, detector):
     
     """
     Generates random starting position for the particle. 
@@ -18,13 +19,29 @@ def generate_position(particle, dist_file=None):
     Default is for SBND.
     """
     
-    x = random.uniform(0,1)*400-200;
-    y = random.uniform(0,1)*400-200;
-    z = random.uniform(0,1)*500;
+    if detector == "sbnd":
+            
+        x = random.uniform(0,1)*400-200
+        y = random.uniform(0,1)*400-200
+        z = random.uniform(0,1)*500
+    
+    elif detector == "microboone":
+
+        x = random.uniform(0,1)*400-200
+        y = random.uniform(0,1)*400-200
+        z = random.uniform(0,1)*500
     
     particle.map['x'] = x
     particle.map['y'] = y
     particle.map['z'] = z
+
+def generate_momentum(p):
+
+    p.map['px'] = 0
+    p.map['py'] = 0
+    p.map['pz'] = 0
+
+
     
 def generate_mother(particle,mom1=0,mom2=0):
     """
@@ -62,7 +79,7 @@ def dump_file_info(events):
         for p in ev.particles:
             p.print_info()
 
-def check_info(events):
+def check_info(events, detector):
     """
     Checks information stored in input events
     Missing information is generated randomly if needed    
@@ -71,7 +88,7 @@ def check_info(events):
         for p in ev.particles:
             keys = p.map.keys()
             if 'x' not in keys:
-                generate_position(p)
+                generate_position(p, detector)
 
             if 'mother1' not in keys:
                 generate_mother(p)
@@ -122,13 +139,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Converts files to hepevt format")
     
     # Positional arguments
-    parser.add_argument("format", help="Input file format. Formats currently supported: lhef, bdnmc or user defined")
+    parser.add_argument("format", help="Input file format. Formats currently supported: lhef, bdnmc, sbnd_crt_dark_neutrino or user defined")
+    parser.add_argument("detector", help="Detector. Detectors currently supported: sbnd or microboone")
     parser.add_argument("input_filename", help="Input file name")
     parser.add_argument("output_filename", help="Output file name")
 
     # Optional arguments 
     parser.add_argument("--DM_mass", help="Mass of the DM particle (GeV/c) (required for BdNMC input files)")
     parser.add_argument("--V_mass", help="Mass of the dark photon (GeV/c) (required for BdNMC input files)")
+
+    parser.add_argument("--DN_mass", help="Mass of the  dark neutrino (MeV/c) (required for SBND Dark Neutrino input files)")
 
     args = parser.parse_args()
 
@@ -141,13 +161,19 @@ if __name__ == '__main__':
         else:
             infile = bdnmc.BdNMCFile(args.input_filename, args.DM_mass, args.V_mass)
 
+    elif args.format=="sbnd_crt_dark_neutrino":
+        if args.DN_mass == None:
+            sys.exit("\n\nERROR: Dark Neutrino mass required for SBND CRT dark neutrino input\n Run python convertToHepevt -h for a list of available options\n")
+        else:
+            infile = sbnd_crt.SbndCRTFile(args.input_filename, args.DN_mass)
+
     elif args.format=="user":
         infile = user.UserFile(args.input_filename)
 
     else:
-        sys.exit("\n\nERROR: File format not supported !\n Inputs accepted: bdnmc, lhef or user\n Run python convertToHepevt -h for a list of available options.")
+        sys.exit("\n\nERROR: File format not supported !\n Inputs accepted: bdnmc, lhef, sbnd_crt_dark_neutrino user\n Run python convertToHepevt -h for a list of available options.")
         
     infile.read_events()
-    infile.dump_file_info()
-    check_info(infile.events)
+    #infile.dump_file_info()
+    check_info(infile.events, args.detector)
     write_hepevt(infile.events, args.output_filename)
